@@ -12,7 +12,7 @@ load_dotenv()
 router = APIRouter(prefix='/curriculum')
 
 brt = boto3.client(
-    service_name='bedrock-runtime', 
+    service_name='bedrock-runtime',
     region_name='us-east-1',
     aws_access_key_id=getenv("AWS_ACCESS_KEY_ID"),
     aws_secret_access_key=getenv("AWS_SECRET_ACCESS_KEY")
@@ -22,6 +22,9 @@ async def _upload_pdf(file: UploadFile) -> str:
     '''Uploads a PDF file to the Mathpix API and returns the PDF ID.'''
     upload_url = "https://api.mathpix.com/v3/pdf"
     async with httpx.AsyncClient() as client:
+
+        print(file)
+        print("----------------------------=-=-=-=-=-=--")
         files = {
             'file': (file.filename, file.file, file.content_type)
         }
@@ -42,11 +45,11 @@ async def _extract_lines(pdf_id:str) -> dict:
         }
         response = await client.get(extract_lines_url, headers=headers)
         return response.json()
-    
+
 def _prompt_claude(prompt:str) -> str:
     '''Prompts the Claude model with a syllabus and returns a curriculum.'''
     body = json.dumps({
-    "max_tokens": 1024,
+    "max_tokens": 2048,
     "messages": [
         {
             "role": "user",
@@ -73,9 +76,9 @@ async def generate_curriculum(file: UploadFile = File(None)):
     while "status" in response:
         sleep(2)
         response = await _extract_lines(pdf_id)
-    
+
     response = response
-    
+
     syllabus_text = ""
     for page in response["pages"]:
         for line in page["lines"]:
