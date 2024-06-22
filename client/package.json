@@ -10,6 +10,8 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@humeai/voice-react": "^0.1.8",
+        "@types/node": "^20.14.8",
         "autoprefixer": "^10.4.19",
         "hume": "^0.7.2",
         "postcss": "^8.4.38",

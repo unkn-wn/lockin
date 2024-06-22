@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "./lib/hume";
 
-import ChatMessage from "./ChatMessage";
+import Chat from "./components/Chat";
 
 import { FaUpload } from "react-icons/fa6";
 import Webcam from "react-webcam";
 
 export default function App() {
+
     const [messages, setMessages] = useState<{ text: string; sender: string; timestamp: string; }[]>([]);
     const [lessons, setLessons] = useState<string[]>([]);
-
 
     useEffect(() => {
         fetchMessages();
         fetchLessons();
-    }, []);
-
+        connect().then((token) => {
+            setToken(token)
+        })
+    }, [])
 
     // Some function to fetch messages
     const fetchMessages = async () => {
@@ -35,7 +38,6 @@ export default function App() {
         ]);
     }
 
-
     // Some function to fetch lessons
     const fetchLessons = async () => {
         setLessons([
@@ -55,7 +57,6 @@ export default function App() {
         ]);
     }
 
-
     // Upload file function
     const uploadFile = () => {
         console.log("clicked!")
@@ -64,7 +65,6 @@ export default function App() {
     return (
         <>
             <div className='h-screen w-screen bg-white'>
-
                 <div className="flex flex-row h-full">
                     {/* LEFT SIDEBAR */}
                     <div className="flex flex-col w-1/5 p-4">
