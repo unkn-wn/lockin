@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from routers import curriculum
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -9,3 +11,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(curriculum.router)
