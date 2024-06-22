@@ -23,8 +23,8 @@ async def _upload_pdf(file: UploadFile) -> str:
     upload_url = "https://api.mathpix.com/v3/pdf"
     async with httpx.AsyncClient() as client:
 
+        print("----------------------------")
         print(file)
-        print("----------------------------=-=-=-=-=-=--")
         files = {
             'file': (file.filename, file.file, file.content_type)
         }

@@ -14,10 +14,12 @@ export default function App() {
     const [lessons, setLessons] = useState<{ name: string; description: string; topics: string[] }[]>([]);
 
     const [loading, setLoading] = useState(false);
+    const [speaking, setSpeaking] = useState(false);
 
 
     useEffect(() => {
         fetchMessages("123");
+        setSpeaking(true);
     }, []);
 
 
@@ -160,13 +162,15 @@ export default function App() {
                             <FaUpload size={24} />
                             <h1 className='text-lg text-center'>upload.</h1>
                         </div>
+
+                        {/* WEBCAM */}
+                        <div className="mt-2 h-48" >
+                            <Webcam height={300} width={300} className={`rounded-xl ${speaking ? 'border-green-500 border-4' : ''}`} />
+                        </div>
                     </div>
 
                     {/* MAIN PAGE */}
                     <div className="flex flex-col w-4/5 border-l p-4 border-black">
-                        <div className="absolute right-5 top-5">
-                            <Webcam height={300} width={300} className="rounded-xl" />
-                        </div>
 
                         {/* Chat */}
                         <div className="overflow-y-auto h-full pr-6">
