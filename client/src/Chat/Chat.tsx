@@ -33,10 +33,14 @@ export default function Chat() {
                 <div className="overflow-y-auto h-full pr-6">
                     {messages.slice(1).map((message, index) => {
                         if (message.type == 'user_message' || message.type == 'assistant_message') {
+                            let newMessage = message.message.content;
+                            if (message.type == 'user_message' && message.message.content.indexOf("{Context:") != -1) {
+                                newMessage = message.message.content.split("{Context:")[0];
+                            }
                             return (
                                 <ChatMessage
                                     key={index}
-                                    message={message.message.content}
+                                    message={newMessage}
                                     sender={message.message.role}
                                 />
                             )

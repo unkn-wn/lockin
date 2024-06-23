@@ -1,9 +1,12 @@
 import React, { useRef } from 'react';
 import { ReactSketchCanvas } from 'react-sketch-canvas';
+import { useVoice } from '@humeai/voice-react';
 
 const Whiteboard: React.FC = () => {
 
     const canvas = useRef();
+
+    const { sendSessionSettings } = useVoice()
 
     const canvasStyle = {
         border: "0.0625rem solid #ffffff",
@@ -32,12 +35,20 @@ const Whiteboard: React.FC = () => {
                 'Content-Type': 'application/json'
             },
             method: "POST",
-            body: JSON.stringify({'image': imageBase64}) // get the format of {description: string} into claude
+            body: JSON.stringify({'image': imageBase64})
         };
 
         fetch("http://localhost:8000/curriculum/image-to-text", requestOptions)
           .then((response) => response.json())
-          .then((result) => console.log(result))
+          .then((result) => (
+                console.log(result),
+                sendSessionSettings({
+                    context: {
+                        text: `The User provided a reference image for the next message: ${result.description}`,
+                        type: 'temporary'
+                    }
+                })
+          ))
           .catch((error) => console.error(error));
     };
 
