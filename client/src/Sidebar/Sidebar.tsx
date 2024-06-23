@@ -104,7 +104,6 @@ export default function Sidebar({ loading, setLoading, setSelectedLesson, setTop
                                     clearMessages()
                                     setSelectedLesson(lesson)
                                     console.log(lesson.name)
-                                    // sendUserInput('Hello')
                                 }}
                             >
                                 {index + 1}: {lesson.name}
