@@ -23,8 +23,8 @@ async def _upload_pdf(file: UploadFile) -> str:
     upload_url = "https://api.mathpix.com/v3/pdf"
     async with httpx.AsyncClient() as client:
 
-        print("----------------------------")
         print(file)
+        print("----------------------------=-=-=-=-=-=--")
         files = {
             'file': (file.filename, file.file, file.content_type)
         }
@@ -45,15 +45,37 @@ async def _extract_lines(pdf_id:str) -> dict:
         }
         response = await client.get(extract_lines_url, headers=headers)
         return response.json()
-
-def _prompt_claude(prompt:str) -> str:
-    '''Prompts the Claude model with a syllabus and returns a curriculum.'''
+    
+def _topic_to_curriculum(topic:str) -> str:
+    '''Prompts the Claude model with a topic and returns a curriculum.'''
     body = json.dumps({
     "max_tokens": 2048,
     "messages": [
         {
             "role": "user",
-            "content": "Read the following text from a syllabus, generate a curriculum with at least 5 chapters, and return only a list of json objects with the following structure: {\"name\":\"\",\"description\":\"\",\"topics\":[\"\",\"\",\"\"]}\n\n\nSyllabus: \n" + prompt
+            "content": "Given the following topic, generate a detailed curriculum with at least 10 chapters, and return only a list of json objects with the following structure: {\"name\":\"\",\"description\":\"\",\"topics\":[\"\",\"\",\"\"]}\n\n\nTopic: \n" + topic
+        },
+        {
+            "role": "assistant",
+            "content": "["
+        }
+    ],
+    "anthropic_version": "bedrock-2023-05-31"
+    })
+
+    response = brt.invoke_model(body=body, modelId="anthropic.claude-3-5-sonnet-20240620-v1:0")
+
+    response_body = json.loads(response.get("body").read())
+    return response_body.get("content")[0]['text']
+
+def _file_to_curriculum(prompt:str) -> str:
+    '''Prompts the Claude model with a syllabus file contents and returns a curriculum.'''
+    body = json.dumps({
+    "max_tokens": 2048,
+    "messages": [
+        {
+            "role": "user",
+            "content": "Read the following text from a syllabus, generate a curriculum with at least 10 chapters, and return only a list of json objects with the following structure: {\"name\":\"\",\"description\":\"\",\"topics\":[\"\",\"\",\"\"]}\n\n\nSyllabus: \n" + prompt
         },
         {
             "role": "assistant",
@@ -69,21 +91,24 @@ def _prompt_claude(prompt:str) -> str:
     return response_body.get("content")[0]['text']
 
 @router.post("/generate")
-async def generate_curriculum(file: UploadFile = File(None)):
-    pdf_id = await _upload_pdf(file)
+async def generate_curriculum(file: UploadFile | None = None, topic: str | None = None):
+    if file != None:
+        pdf_id = await _upload_pdf(file)
 
-    response = await _extract_lines(pdf_id)
-    while "status" in response:
-        sleep(2)
         response = await _extract_lines(pdf_id)
+        while "status" in response:
+            sleep(2)
+            response = await _extract_lines(pdf_id)
 
-    response = response
+        response = response
 
-    syllabus_text = ""
-    for page in response["pages"]:
-        for line in page["lines"]:
-            syllabus_text += line["text"] + "\n"
+        syllabus_text = ""
+        for page in response["pages"]:
+            for line in page["lines"]:
+                syllabus_text += line["text"] + "\n"
 
-    curriculum = "[" + _prompt_claude(syllabus_text)
-
-    return { "lessons": json.loads(curriculum) }
+        curriculum = "[" + _file_to_curriculum(syllabus_text)
+        return { "lessons": json.loads(curriculum) }
+    else:
+        curriculum = "[" + _topic_to_curriculum(topic)
+        return { "lessons": json.loads(curriculum) }
