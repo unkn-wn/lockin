@@ -47,7 +47,7 @@ export default function Chat({ lesson, emotion } : Props) {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-        if (messages.length > 1 && emotion && emotion.score > 0.6) {
+        if (messages.length > 2 && emotion && emotion.score > 0.6) {
             console.log(emotion)
             sendSessionSettings({ context: { text: `The user is currently feeling ${emotion.name}`, type: 'temporary' } })
         }

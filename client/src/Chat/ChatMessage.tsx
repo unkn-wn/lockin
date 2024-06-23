@@ -16,7 +16,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, context, sender}) =>
                             <div className='flex flex-col w-10/12 bg-zinc-300 rounded-xl p-2'>
                                 {/* <p className='font-light text-sm text-right'>{timestamp}</p> */}
                                 <p className='text-right'>{message}</p>
-                                <p className='text-right text-xs font-light'>{context}</p>
+                                <p className='text-right text-xs font-light text-red-600'>{context}</p>
                             </div>
                         </div>
                     </>
