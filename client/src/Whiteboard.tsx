@@ -21,7 +21,24 @@ const Whiteboard: React.FC = () => {
         // @ts-ignore
         const data = await canvas.current.exportImage("png");
 
-        console.log(data);
+        // console.log(data);
+
+        const imageBase64 = data.split(",")[1];
+
+
+        const requestOptions = {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify({'image': imageBase64}) // get the format of {description: string} into claude
+        };
+
+        fetch("http://localhost:8000/curriculum/image-to-text", requestOptions)
+          .then((response) => response.json())
+          .then((result) => console.log(result))
+          .catch((error) => console.error(error));
     };
 
     return (

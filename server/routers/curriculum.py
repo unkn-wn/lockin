@@ -8,6 +8,8 @@ import boto3
 from dotenv import load_dotenv
 from fastapi import APIRouter, UploadFile, File
 
+from models.curriculum import ImageByteRequestBody
+
 load_dotenv()
 
 router = APIRouter(prefix='/curriculum')
@@ -46,7 +48,7 @@ async def _extract_lines(pdf_id:str) -> dict:
         }
         response = await client.get(extract_lines_url, headers=headers)
         return response.json()
-    
+
 def _topic_to_curriculum(topic:str) -> str:
     '''Prompts the Claude model with a topic and returns a curriculum.'''
     body = json.dumps({
@@ -112,7 +114,7 @@ async def generate_curriculum(topic: str):
     return { "lessons": json.loads(curriculum) }
 
 @router.post("/image-to-text")
-async def image_to_text(file_bytes_base_64:str):
+async def image_to_text(requestBody: ImageByteRequestBody):
     '''Converts an image to text using the Mathpix API.'''
     body = json.dumps(
     {
@@ -127,7 +129,7 @@ async def image_to_text(file_bytes_base_64:str):
                             "source": {
                                 "type": "base64",
                                 "media_type": "image/png",
-                                "data": file_bytes_base_64,
+                                "data": requestBody.image,
                             },
                         },
                         {"type": "text", "text": "Explain exactly what is in this image with as much detail as possible."},
