@@ -42,13 +42,15 @@ export default function App() {
     //     }
     // }, [messages]);
 
-    // Fetch lessons function ADD TOPIC CAPABILITIES
-    const fetchLessons = async (file: File | null) => {
+    // Fetch lessons function
+    const fetchLessons = async (lessondata: any | null) => {
         setLoading(true);
         try {
             const formData = new FormData();
-            if (file) {
-                formData.append('file', file);
+            if (lessondata instanceof File) {
+                formData.append('file', lessondata);
+            } else if (typeof lessondata === 'string') {
+                formData.append('topic', lessondata);
             }
 
             const response = await fetch("http://localhost:8000/curriculum/generate", {
@@ -106,6 +108,7 @@ export default function App() {
         e.preventDefault();
         console.log("topic: " + topicTextbox);
         setTextboxOn(false);
+        fetchLessons(topicTextbox);
     }
 
 
@@ -174,8 +177,8 @@ export default function App() {
                                                     </MenuButton>
                                                     <MenuList>
                                                         <MenuItem onClick={() => { uploadFile() }}>
+                                                            <input type='file' ref={inputFile} style={{ display: 'none' }} accept=".pdf" />
                                                             <div className="flex flex-row gap-2 p-2 justify-center items-center hover:bg-gray-200 transition rounded-lg">
-                                                                <input type='file' ref={inputFile} style={{ display: 'none' }} accept=".pdf" />
                                                                 <FaUpload size={24} />
                                                                 <h2 className='text-md text-center'>upload.</h2>
                                                             </div>
@@ -208,7 +211,7 @@ export default function App() {
                                 {whiteboardOn ? <Whiteboard /> : null}
 
                                 {/* CHAT */}
-                                <Chat />
+                                {/* <Chat /> */}
                             </div>
                         </div>
                     </div >
