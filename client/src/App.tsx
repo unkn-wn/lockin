@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-
+import Chat from "./Chat/Chat";
 import { FaUpload } from "react-icons/fa6";
 import ClipLoader from "react-spinners/ClipLoader";
 import Webcam from "react-webcam";
+import { connect } from './lib/hume'
+import { VoiceProvider } from '@humeai/voice-react';
 
 export default function App() {
     const inputFile = useRef<HTMLInputElement | null>(null);
@@ -10,12 +12,14 @@ export default function App() {
 
     const [messages, setMessages] = useState<{ text: string; sender: string; timestamp: string; }[]>([]);
     const [lessons, setLessons] = useState<{ name: string; description: string; topics: string[] }[]>([]);
+    const [token, setToken] = useState<string | null>(null)
 
     const [loading, setLoading] = useState(false);
     const [speaking, setSpeaking] = useState(false);
 
     useEffect(() => {
         fetchMessages("123");
+        connect(setToken)
         setSpeaking(true);
     }, [])
 
@@ -25,7 +29,6 @@ export default function App() {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages]);
-
 
     // Some function to fetch messages
     const fetchMessages = async (temp: string) => {
@@ -79,7 +82,6 @@ export default function App() {
         }
     }
 
-
     // Switching lessons on click
     const switchLesson = (index: number) => {
         console.log("Switching to lesson", index + 1);
@@ -117,72 +119,59 @@ export default function App() {
     }, []);
     // -------------------------------------------------------------------------
 
-
-
     return (
         <>
-            <div className='h-screen w-screen bg-white'>
-                {/* LOADING ICON */}
-                {loading ? <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm z-50">
-                    <ClipLoader
-                        color={"#fff"}
-                        loading={true}
-                        size={30}
-                        aria-label="Loading Spinner"
-                        data-testid="loader"
-                    />
-                </div> : null}
+            <VoiceProvider auth={{ type: 'accessToken', value: token ?? '' }} configId='b38e9463-48e8-4fd0-968a-f8970f40f134'>
+                <div className='h-screen w-screen bg-white'>
+                    {/* LOADING ICON */}
+                    {loading ? <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm z-50">
+                        <ClipLoader
+                            color={"#fff"}
+                            loading={true}
+                            size={30}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        />
+                    </div> : null}
 
-                {/* MAIN CONTAINER */}
-                <div className="flex flex-row h-full">
-                    {/* LEFT SIDEBAR */}
-                    <div className="flex flex-col w-1/5 p-4">
-                        <h1 className="text-5xl font-bold">lock in.</h1>
+                    {/* MAIN CONTAINER */}
+                    <div className="flex flex-row h-full">
+                        {/* LEFT SIDEBAR */}
+                        <div className="flex flex-col w-1/5 p-4">
+                            <h1 className="text-5xl font-bold">lock in.</h1>
 
-                        {/* LESSONS */}
-                        <div className="flex flex-col gap-8 py-6 overflow-y-auto h-full">
-                            {lessons.map((lesson, index) => (
-                                <h1 className='text-2xl font-bold cursor-pointer hover:text-gray-500 transition'
-                                    key={index}
-                                    onClick={() => switchLesson(index)}>
-                                    {index + 1}: {lesson.name}
-                                </h1>
-                            ))}
+                            {/* LESSONS */}
+                            <div className="flex flex-col gap-8 py-6 overflow-y-auto h-full">
+                                {lessons.map((lesson, index) => (
+                                    <h1 className='text-2xl font-bold cursor-pointer hover:text-gray-500 transition'
+                                        key={index}
+                                        onClick={() => switchLesson(index)}>
+                                        {index + 1}: {lesson.name}
+                                    </h1>
+                                ))}
+                            </div>
+
+                            {/* UPLOAD BUTTON */}
+                            <input type='file' ref={inputFile} style={{ display: 'none' }} accept=".pdf" />
+                            <div className="flex flex-row gap-2 justify-center items-center py-2 rounded-lg border-2 border-black cursor-pointer hover:-translate-y-0.5 transition"
+                                onClick={() => { uploadFile() }}>
+                                <FaUpload size={24} />
+                                <h1 className='text-lg text-center'>upload.</h1>
+                            </div>
+
+                            {/* WEBCAM */}
+                            <div className="mt-2 h-48" >
+                                <Webcam height={300} width={300} className={`rounded-xl ${speaking ? 'border-green-500 border-4' : ''}`} />
+                            </div>
                         </div>
 
-                        {/* UPLOAD BUTTON */}
-                        <input type='file' ref={inputFile} style={{ display: 'none' }} accept=".pdf" />
-                        <div className="flex flex-row gap-2 justify-center items-center py-2 rounded-lg border-2 border-black cursor-pointer hover:-translate-y-0.5 transition"
-                            onClick={() => { uploadFile() }}>
-                            <FaUpload size={24} />
-                            <h1 className='text-lg text-center'>upload.</h1>
-                        </div>
-
-                        {/* WEBCAM */}
-                        <div className="mt-2 h-48" >
-                            <Webcam height={300} width={300} className={`rounded-xl ${speaking ? 'border-green-500 border-4' : ''}`} />
-                        </div>
-                    </div>
-
-                    {/* MAIN PAGE */}
-                    <div className="flex flex-col w-4/5 border-l p-4 border-black">
-
-                        {/* Chat */}
-                        <div className="overflow-y-auto h-full pr-6">
-                            {messages.map((message, index) => (
-                                <ChatMessage
-                                    key={index}
-                                    message={message.text}
-                                    sender={message.sender}
-                                    timestamp={message.timestamp}
-                                />
-                            ))}
-
-                            <div ref={messagesEndRef} />
+                        {/* MAIN PAGE */}
+                        <div className="flex flex-col w-4/5 border-l p-4 border-black">
+                            <Chat messages={messages} messagesEndRef={messagesEndRef} />
                         </div>
                     </div>
-                </div>
-            </div >
+                </div >
+            </VoiceProvider>
         </>
     )
 }
