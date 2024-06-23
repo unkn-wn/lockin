@@ -47,16 +47,18 @@ export default function App() {
         setLoading(true);
         try {
             const formData = new FormData();
+            let response:Response;
             if (lessondata instanceof File) {
                 formData.append('file', lessondata);
-            } else if (typeof lessondata === 'string') {
-                formData.append('topic', lessondata);
+                response = await fetch("http://localhost:8000/curriculum/generate/file", {
+                    method: 'POST',
+                    body: formData,
+                });
+            } else {
+                response = await fetch(`http://localhost:8000/curriculum/generate/topic?topic=${lessondata.toString()}`, {
+                    method: 'POST'
+                });
             }
-
-            const response = await fetch("http://localhost:8000/curriculum/generate", {
-                method: 'POST',
-                body: formData,
-            });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);

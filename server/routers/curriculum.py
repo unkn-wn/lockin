@@ -90,25 +90,22 @@ def _file_to_curriculum(prompt:str) -> str:
     response_body = json.loads(response.get("body").read())
     return response_body.get("content")[0]['text']
 
-@router.post("/generate")
-async def generate_curriculum(file: UploadFile | None = None, topic: str | None = None):
-    if file != None:
-        pdf_id = await _upload_pdf(file)
-
+@router.post("/generate/file")
+async def generate_curriculum(file: UploadFile):
+    pdf_id = await _upload_pdf(file)
+    response = await _extract_lines(pdf_id)
+    while "status" in response:
+        sleep(2)
         response = await _extract_lines(pdf_id)
-        while "status" in response:
-            sleep(2)
-            response = await _extract_lines(pdf_id)
+    response = response
+    syllabus_text = ""
+    for page in response["pages"]:
+        for line in page["lines"]:
+            syllabus_text += line["text"] + "\n"
+    curriculum = "[" + _file_to_curriculum(syllabus_text)
+    return { "lessons": json.loads(curriculum) }
 
-        response = response
-
-        syllabus_text = ""
-        for page in response["pages"]:
-            for line in page["lines"]:
-                syllabus_text += line["text"] + "\n"
-
-        curriculum = "[" + _file_to_curriculum(syllabus_text)
-        return { "lessons": json.loads(curriculum) }
-    else:
-        curriculum = "[" + _topic_to_curriculum(topic)
-        return { "lessons": json.loads(curriculum) }
+@router.post("/generate/topic")
+async def generate_curriculum(topic: str):
+    curriculum = "[" + _topic_to_curriculum(topic)
+    return { "lessons": json.loads(curriculum) }
