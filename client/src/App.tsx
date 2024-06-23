@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Chat from "./Chat/Chat";
 import { FaUpload } from "react-icons/fa6";
 import ClipLoader from "react-spinners/ClipLoader";
-import Webcam from "react-webcam";
+import FaceWidgets from "./Facecam/FaceWidgets";
 import { getToken } from './lib/hume'
 import { VoiceProvider } from '@humeai/voice-react';
 
@@ -130,7 +130,7 @@ export default function App() {
 
                                 {/* WEBCAM */}
                                 <div className="mt-2 h-48" >
-                                    <Webcam height={300} width={300} className={`rounded-xl ${speaking ? 'border-green-500 border-4' : ''}`} />
+                                    <FaceWidgets />
                                 </div>
                             </div>
 
