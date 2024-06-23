@@ -31,7 +31,7 @@ export default function Chat() {
         <>
             {status.value == 'connected' ?
                 <div className="overflow-y-auto h-full pr-6">
-                    {messages.map((message, index) => {
+                    {messages.slice(1).map((message, index) => {
                         if (message.type == 'user_message' || message.type == 'assistant_message') {
                             return (
                                 <ChatMessage

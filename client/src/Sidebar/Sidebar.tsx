@@ -20,7 +20,7 @@ type Props = {
 
 export default function Sidebar({ loading, setLoading }: Props) {
 
-    const { sendSessionSettings, clearMessages } = useVoice()
+    const { sendUserInput, sendSessionSettings, clearMessages } = useVoice()
 
     const inputFile = useRef<HTMLInputElement | null>(null);
 
@@ -85,8 +85,6 @@ export default function Sidebar({ loading, setLoading }: Props) {
         <>
             <div className="flex flex-col w-1/5 p-4">
                 <h1 className="text-5xl font-bold">lock in.</h1>
-
-                {/* LESSONS */}
                 <div className="flex flex-col gap-8 py-6 overflow-y-auto h-full">
                     {lessons.map((lesson, index) => (
                         <h1 className='text-2xl font-bold cursor-pointer hover:text-gray-500 transition'
@@ -99,6 +97,7 @@ export default function Sidebar({ loading, setLoading }: Props) {
                                         type: 'persistent'
                                     }
                                 })
+                                sendUserInput(' ')
                             }}
                         >
                             {index + 1}: {lesson.name}
