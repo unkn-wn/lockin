@@ -6,6 +6,8 @@ import { FaceTrackedVideo } from "./FaceTrackedVideo";
 import { VideoRecorder } from "../lib/media/videoRecorder";
 import { blobToBase64 } from "../lib/utilities/blobUtilities";
 
+import { useVoice } from "@humeai/voice-react";
+
 
 export default function FaceWidgets() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -14,6 +16,7 @@ export default function FaceWidgets() {
   const mountRef = useRef(true);
   const recorderCreated = useRef(false);
   const numReconnects = useRef(0);
+  const { sendSessionSettings } = useVoice()
   const [status, setStatus] = useState("");
   const maxReconnects = 3;
 
@@ -83,11 +86,12 @@ export default function FaceWidgets() {
     predictions.forEach(async (pred: FacePrediction, dataIndex: number) => {
       if (dataIndex === 0) {
         const newEmotions = pred.emotions;
-        newEmotions.forEach((emotion: Emotion) => {
-            if (emotion.score > 0.7) {
-                console.log("Bros " + emotion.name);
-            }
-        });
+        newEmotions.sort((a: {name: string, score: number}, b: {name: string, score: number}) => {return b.score - a.score})
+        const topEmotion = newEmotions[0]
+        if (topEmotion.score > 0.6) {
+          console.log('just told it u was', topEmotion.name)
+          sendSessionSettings({context: {text: `The user is currently feeling ${topEmotion.name}`, type: 'temporary'}})
+        }
       }
     });
 
@@ -203,17 +207,15 @@ export default function FaceWidgets() {
     <div>
       <div className="md:flex">
         <FaceTrackedVideo
-          className="mb-6"
           onVideoReady={onVideoReady}
-          width={200}
-          height={125}
+          width={300}
+          height={300}
         />
-        <div className="ml-10">
-        </div>
-        
+
+
       </div>
 
-      <div className="pt-6">{status}</div>
+      <div className="py-2">{status}</div>
       <canvas className="hidden" ref={photoRef}></canvas>
     </div>
   );

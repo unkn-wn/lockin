@@ -1,10 +1,32 @@
 import React, { useState, useEffect, useRef } from "react";
 import Chat from "./Chat/Chat";
-import { FaUpload } from "react-icons/fa6";
+import Whiteboard from "./Whiteboard";
+import { FaUpload, FaDrawPolygon, FaAngleDown, FaPen } from "react-icons/fa6";
 import ClipLoader from "react-spinners/ClipLoader";
 import FaceWidgets from "./Facecam/FaceWidgets";
 import { getToken } from './lib/hume'
 import { VoiceProvider } from '@humeai/voice-react';
+
+import {
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    MenuItemOption,
+    MenuGroup,
+    MenuOptionGroup,
+    MenuDivider,
+    Button,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    useDisclosure,
+} from '@chakra-ui/react'
+
 
 export default function App() {
     const inputFile = useRef<HTMLInputElement | null>(null);
@@ -15,6 +37,9 @@ export default function App() {
 
     const [loading, setLoading] = useState(false);
     const [speaking, setSpeaking] = useState(false);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
+    const [whiteboardOn, setWhiteboardOn] = useState(false);
 
     useEffect(() => {
         getToken(setToken)
@@ -88,6 +113,25 @@ export default function App() {
 
     return (
         <>
+            <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Modal Title</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        hihihhsadskl
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button colorScheme='blue' mr={3} onClick={onClose}>
+                            Close
+                        </Button>
+                        <Button variant='ghost'>Secondary Action</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
+
             {token ?
                 <VoiceProvider auth={{ type: 'accessToken', value: token ?? '' }} configId='b38e9463-48e8-4fd0-968a-f8970f40f134'>
                     <div className='h-screen w-screen bg-white'>
@@ -120,22 +164,60 @@ export default function App() {
                                     ))}
                                 </div>
 
-                                {/* UPLOAD BUTTON */}
-                                <input type='file' ref={inputFile} style={{ display: 'none' }} accept=".pdf" />
-                                <div className="flex flex-row gap-2 justify-center items-center py-2 rounded-lg border-2 border-black cursor-pointer hover:-translate-y-0.5 transition"
-                                    onClick={() => { uploadFile() }}>
-                                    <FaUpload size={24} />
-                                    <h1 className='text-lg text-center'>upload.</h1>
+
+                                <div className="flex flex-row gap-2">
+                                    {/* DRAW BUTTON */}
+                                    <div className="w-1/2 flex flex-row gap-2 justify-center items-center py-2 rounded-lg border-2 border-black cursor-pointer hover:bg-gray-200 transition"
+                                        onClick={() => { setWhiteboardOn(!whiteboardOn) }}>
+                                        <FaDrawPolygon size={24} />
+                                        <h2 className='text-lg text-center'>draw.</h2>
+                                    </div>
+
+                                    {/* GENERATE BUTTON */}
+
+                                    <div className="w-1/2 flex flex-row gap-2 justify-center items-center py-2 rounded-lg border-2 border-black cursor-pointer hover:bg-gray-200 transition">
+                                        <Menu>
+                                            {({ isOpen }) => (
+                                                <>
+                                                    <MenuButton isActive={isOpen} as={Button} rightIcon={<FaAngleDown />}>
+                                                        <h2 className="text-lg text-center">generate.</h2>
+                                                    </MenuButton>
+                                                    <MenuList>
+                                                        <MenuItem onClick={() => { uploadFile() }}>
+                                                            <div className="flex flex-row gap-2 p-2 justify-center items-center hover:bg-gray-200 transition rounded-lg">
+                                                                <input type='file' ref={inputFile} style={{ display: 'none' }} accept=".pdf" />
+                                                                <FaUpload size={24} />
+                                                                <h2 className='text-md text-center'>upload.</h2>
+                                                            </div>
+                                                        </MenuItem>
+                                                        <MenuItem onClick={onOpen}>
+                                                            <div className="flex flex-row gap-2 mb-4 p-2 justify-center items-center hover:bg-gray-200 transition rounded-lg">
+                                                                <FaPen size={24} />
+                                                                <h2 className='text-md text-center'>topic.</h2>
+                                                            </div>
+                                                        </MenuItem>
+                                                    </MenuList>
+                                                </>
+                                            )}
+                                        </Menu>
+                                    </div>
                                 </div>
 
+
+
                                 {/* WEBCAM */}
-                                <div className="mt-2 h-48" >
-                                    <FaceWidgets />
+                                <div className="mt-2" >
+                                    {/* <FaceWidgets /> */}
                                 </div>
                             </div>
 
                             {/* MAIN PAGE */}
                             <div className="flex flex-col w-4/5 border-l p-4 border-black">
+                                {/* WHITEBOARD */}
+
+                                {whiteboardOn ? <Whiteboard /> : null}
+
+                                {/* CHAT */}
                                 <Chat />
                             </div>
                         </div>
