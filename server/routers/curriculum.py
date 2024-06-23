@@ -1,3 +1,4 @@
+import base64
 import httpx
 import json
 from os import getenv
@@ -109,3 +110,37 @@ async def generate_curriculum(file: UploadFile):
 async def generate_curriculum(topic: str):
     curriculum = "[" + _topic_to_curriculum(topic)
     return { "lessons": json.loads(curriculum) }
+
+@router.post("/image-to-text")
+async def image_to_text(file_bytes_base_64:str):
+    '''Converts an image to text using the Mathpix API.'''
+    body = json.dumps(
+    {
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": 1000,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": "image/png",
+                                "data": file_bytes_base_64,
+                            },
+                        },
+                        {"type": "text", "text": "Explain exactly what is in this image with as much detail as possible."},
+                    ],
+                }
+            ],
+        }
+    )
+
+    response = brt.invoke_model(
+        modelId="anthropic.claude-3-5-sonnet-20240620-v1:0",
+        body=body
+    )
+
+    response_body = json.loads(response.get("body").read())
+    return { "description" : response_body["content"][0]["text"] }
