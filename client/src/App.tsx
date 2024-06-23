@@ -75,35 +75,45 @@ export default function App() {
     }
 
     // -------------------- Upload file functions ------------------------------
-    const uploadFile = () => {
-        inputFile.current?.click();
+    const uploadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const target = event.target as HTMLInputElement;
+        const file = target.files?.[0];
+        if (file) {
+            console.log("File name:", file.name);
+            console.log(file);
+            fetchLessons(file);
+        }
+        // if (inputFile.current) {
+        //     inputFile.current.value = "";
+        // }
     }
+    // const uploadFile = () => {
+    //     inputFile.current?.click();
+    // }
 
-    useEffect(() => {
-        const handleFileChange = (event: Event) => {
-            const target = event.target as HTMLInputElement;
-            const file = target.files?.[0];
-            if (file) {
-                console.log("File name:", file.name);
-                console.log(file);
-                fetchLessons(file);
-            }
+    // useEffect(() => {
+    //     const handleFileChange = (event: Event) => {
+    //         const target = event.target as HTMLInputElement;
+    //         const file = target.files?.[0];
+    //         if (file) {
+    //             console.log("File name:", file.name);
+    //             console.log(file);
+    //             fetchLessons(file);
+    //         }
 
-            // Reset the value of the input to allow the same file to be selected multiple times
-            if (inputFile.current) {
-                inputFile.current.value = "";
-            }
-        };
+    //         // Reset the value of the input to allow the same file to be selected multiple times
+    //         if (inputFile.current) {
+    //             inputFile.current.value = "";
+    //         }
+    //     };
 
-        const inputElement = inputFile.current;
-        setTimeout(() => {
-            inputElement?.addEventListener('change', handleFileChange);
-        }, 500)
+    //     const inputElement = inputFile.current;
+    //     inputElement?.addEventListener('change', handleFileChange);
 
-        return () => {
-            inputElement?.removeEventListener('change', handleFileChange);
-        };
-    }, []);
+    //     return () => {
+    //         inputElement?.removeEventListener('change', handleFileChange);
+    //     };
+    // }, []);
     // -------------------------------------------------------------------------
 
 
@@ -183,9 +193,9 @@ export default function App() {
                                                     <MenuButton isActive={isOpen} as={Button} rightIcon={<FaAngleDown />}>
                                                         <h2 className="text-lg text-center">generate.</h2>
                                                     </MenuButton>
-                                                    <MenuList className="bg-white mb-2">
-                                                        <MenuItem onClick={() => { uploadFile() }}>
-                                                            <input type='file' ref={inputFile} style={{ display: 'none' }} accept=".pdf" />
+                                                    <MenuList>
+                                                        <MenuItem onClick={() => { inputFile.current?.click() }}>
+                                                            <input type='file' ref={inputFile} onChange={(event) => uploadFile(event)} style={{ display: 'none' }} accept=".pdf" />
                                                             <div className="flex flex-row gap-2 p-2 justify-center items-center hover:bg-gray-200 transition rounded-lg">
                                                                 <FaUpload size={24} />
                                                                 <h2 className='text-md text-center'>upload.</h2>
