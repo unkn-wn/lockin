@@ -50,7 +50,7 @@ const Whiteboard = ({ setLoading }: Props) => {
                     sendSessionSettings({
                         context: {
                             text: `The User provided a reference image for the next message: ${result.description}`,
-                            type: 'editable'
+                            type: 'persistent'
                         }
                     });
                     setLoading(false);

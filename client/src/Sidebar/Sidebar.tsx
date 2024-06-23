@@ -13,11 +13,17 @@ import { useVoice } from '@humeai/voice-react';
 import Whiteboard from "../Whiteboard";
 import FaceWidgets from '../Facecam/FaceWidgets';
 
+type Lesson = {
+    name: string;
+    description: string;
+    topics: string[];
+}
+
 
 type Props = {
     loading: boolean,
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    setSelectedLesson: React.Dispatch<React.SetStateAction<string | null>>
+    setSelectedLesson: React.Dispatch<React.SetStateAction<Lesson | null>>
 }
 
 export default function Sidebar({ loading, setLoading, setSelectedLesson }: Props) {
@@ -94,14 +100,9 @@ export default function Sidebar({ loading, setLoading, setSelectedLesson }: Prop
                                 key={index}
                                 onClick={() => {
                                     clearMessages()
-                                    setSelectedLesson(lesson.name)
-                                    sendSessionSettings({
-                                        context: {
-                                            text: `The lesson is: ${lesson.name}. The lesson description is: ${lesson.description}. The lesson topics to follow are: ${lesson.topics.join(', ')}. Please focus on teaching in very high depth for these topics. DO NOT cover any other topics, even if requested to do so!`,
-                                            type: 'persistent'
-                                        }
-                                    })
-                                    sendUserInput(' ')
+                                    setSelectedLesson(lesson)
+                                    console.log(lesson.name)
+                                    // sendUserInput('Hello')
                                 }}
                             >
                                 {index + 1}: {lesson.name}

@@ -4,21 +4,41 @@ import { useEffect } from 'react';
 import ChatMessage from './ChatMessage';
 
 
-export default function Chat() {
+type Lesson = {
+    name: string;
+    description: string;
+    topics: string[];
+}
+
+
+type Props = {
+    lesson: Lesson
+}
+
+export default function Chat({ lesson } : Props) {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-    const { connect, disconnect, messages, status } = useVoice();
+    const { connect, disconnect, messages, status, sendSessionSettings } = useVoice();
 
     useEffect(() => {
         console.log(messages)
     }, [messages])
 
     useEffect(() => {
-        connect()
+        async function connectyPoo() {
+            await connect()
+            sendSessionSettings({
+                context: {
+                    text: `The lesson is: ${lesson.name}. The lesson description is: ${lesson.description}. The lesson topics to follow are: ${lesson.topics.join(', ')}. Please focus on teaching in very high depth for these topics. DO NOT cover any other topics, even if requested to do so!`,
+                    type: 'persistent'
+                }
+            })
+        }
+        connectyPoo()
         return () => {
             disconnect()
         }
-    }, [])
+    }, [lesson])
 
 
     useEffect(() => {
@@ -34,13 +54,17 @@ export default function Chat() {
                     {messages.slice(1).map((message, index) => {
                         if (message.type == 'user_message' || message.type == 'assistant_message') {
                             let newMessage = message.message.content;
+                            let context = undefined;
                             if (message.type == 'user_message' && message.message.content.indexOf("{Context:") != -1) {
-                                newMessage = message.message.content.split("{Context:")[0];
+                                const message_context = message.message.content.split("{Context:");
+                                newMessage = message_context[0];
+                                context = message_context[1].slice(0, -1);
                             }
                             return (
                                 <ChatMessage
                                     key={index}
                                     message={newMessage}
+                                    context={context}
                                     sender={message.message.role}
                                 />
                             )
