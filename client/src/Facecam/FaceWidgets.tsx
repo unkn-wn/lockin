@@ -10,7 +10,7 @@ import { throttle } from 'lodash';
 import { useVoice } from "@humeai/voice-react";
 
 
-export default function FaceWidgets() {
+export default function FaceWidgets({ setTopEmotion }: { setTopEmotion: React.Dispatch<React.SetStateAction<Emotion | null>> }) {
     const socketRef = useRef<WebSocket | null>(null);
     const recorderRef = useRef<VideoRecorder | null>(null);
     const photoRef = useRef<HTMLCanvasElement | null>(null);
@@ -91,10 +91,11 @@ export default function FaceWidgets() {
                 const newEmotions = pred.emotions;
                 newEmotions.sort((a: { name: string, score: number }, b: { name: string, score: number }) => { return b.score - a.score })
                 const topEmotion = newEmotions[0]
-                if (topEmotion.score > 0.6) {
-                    console.log('just told it u was', topEmotion.name)
-                    sendSessionSettings({ context: { text: `The user is currently feeling ${topEmotion.name}`, type: 'temporary' } })
-                }
+                setTopEmotion(topEmotion)
+                // if (topEmotion.score > 0.6) {
+                //     console.log('just told it u was', topEmotion.name)
+                //     sendSessionSettings({ context: { text: `The user is currently feeling ${topEmotion.name}`, type: 'temporary' } })
+                // }
             }
         });
 

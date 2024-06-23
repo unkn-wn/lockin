@@ -4,6 +4,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { getToken } from './lib/hume'
 import { VoiceProvider } from '@humeai/voice-react';
 import Sidebar from './Sidebar/Sidebar';
+import { Emotion } from "./lib/data/emotion";
 
 type Lesson = {
     name: string;
@@ -17,6 +18,7 @@ export default function App() {
 
     const [token, setToken] = useState<string | null>(null)
     const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
+    const [topEmotion, setTopEmotion] = useState<Emotion | null>(null)
     const [loading, setLoading] = useState(false);
     // const [speaking, setSpeaking] = useState(false);
 
@@ -51,9 +53,9 @@ export default function App() {
                             />
                         </div> : null}
                         <div className="flex flex-row h-full">
-                            <Sidebar loading={loading} setLoading={setLoading} setSelectedLesson={setSelectedLesson}/>
+                            <Sidebar loading={loading} setLoading={setLoading} setSelectedLesson={setSelectedLesson} setTopEmotion={setTopEmotion}/>
                             <div className="flex flex-col w-4/5 border-l-2 p-4 border-black">
-                                {selectedLesson ? <Chat lesson={selectedLesson} /> : <h1>Upload a file or topic to generate your curriculum!</h1>}
+                                {selectedLesson ? <Chat lesson={selectedLesson} emotion={topEmotion} /> : <h1>Upload a file or topic to generate your curriculum!</h1>}
                             </div>
                         </div>
                     </div >

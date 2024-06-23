@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { useVoice } from '@humeai/voice-react';
 import { useEffect } from 'react';
 import ChatMessage from './ChatMessage';
+import { Emotion } from '../lib/data/emotion';
 
 
 type Lesson = {
@@ -13,16 +14,17 @@ type Lesson = {
 
 type Props = {
     lesson: Lesson
+    emotion: Emotion | null
 }
 
-export default function Chat({ lesson } : Props) {
+export default function Chat({ lesson, emotion } : Props) {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     const { connect, disconnect, messages, status, sendSessionSettings } = useVoice();
 
-    useEffect(() => {
-        console.log(messages)
-    }, [messages])
+    // useEffect(() => {
+    //     console.log(messages)
+    // }, [messages])
 
     useEffect(() => {
         async function connectyPoo() {
@@ -44,6 +46,10 @@ export default function Chat({ lesson } : Props) {
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+        if (messages.length > 1 && emotion && emotion.score > 0.6) {
+            console.log(emotion)
+            sendSessionSettings({ context: { text: `The user is currently feeling ${emotion.name}`, type: 'temporary' } })
         }
     }, [messages]);
 

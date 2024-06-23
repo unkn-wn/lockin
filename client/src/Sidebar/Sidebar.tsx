@@ -12,6 +12,7 @@ import { useVoice } from '@humeai/voice-react';
 
 import Whiteboard from "../Whiteboard";
 import FaceWidgets from '../Facecam/FaceWidgets';
+import { Emotion } from "../lib/data/emotion";
 
 type Lesson = {
     name: string;
@@ -24,9 +25,10 @@ type Props = {
     loading: boolean,
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setSelectedLesson: React.Dispatch<React.SetStateAction<Lesson | null>>
+    setTopEmotion: React.Dispatch<React.SetStateAction<Emotion | null>>
 }
 
-export default function Sidebar({ loading, setLoading, setSelectedLesson }: Props) {
+export default function Sidebar({ loading, setLoading, setSelectedLesson, setTopEmotion }: Props) {
 
     const { sendUserInput, sendSessionSettings, clearMessages } = useVoice()
 
@@ -165,7 +167,7 @@ export default function Sidebar({ loading, setLoading, setSelectedLesson }: Prop
 
                 {/* WEBCAM */}
                 <div className="mt-2 z-10" >
-                    <FaceWidgets />
+                    <FaceWidgets setTopEmotion={setTopEmotion} />
                 </div>
             </div >
 
