@@ -8,13 +8,19 @@ export default function Chat() {
     const { connect, disconnect, messages, status } = useVoice();
 
     useEffect(() => {
-        console.log(messages)
+        if (status.value == 'connected') {
+            console.log(messages)
+        }
     }, [messages])
 
     useEffect(() => {
+        console.log('connecting')
         connect()
         return () => {
-            disconnect()
+            if (status.value == 'connected') {
+                console.log('disconnecting')
+                disconnect()
+            }
         }
     }, [])
 

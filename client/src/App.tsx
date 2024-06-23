@@ -4,7 +4,7 @@ import { FaUpload } from "react-icons/fa6";
 import ClipLoader from "react-spinners/ClipLoader";
 import Webcam from "react-webcam";
 import { getToken } from './lib/hume'
-import { VoiceProvider, useVoice } from '@humeai/voice-react';
+import { VoiceProvider } from '@humeai/voice-react';
 
 export default function App() {
     const inputFile = useRef<HTMLInputElement | null>(null);
@@ -17,7 +17,6 @@ export default function App() {
     const [speaking, setSpeaking] = useState(false);
 
     useEffect(() => {
-        fetchMessages("123");
         getToken(setToken)
         setSpeaking(true);
     }, [])
@@ -114,7 +113,8 @@ export default function App() {
                                     {lessons.map((lesson, index) => (
                                         <h1 className='text-2xl font-bold cursor-pointer hover:text-gray-500 transition'
                                             key={index}
-                                            onClick={() => switchLesson(index)}>
+                                        // onClick={() => switchLesson(index)}
+                                        >
                                             {index + 1}: {lesson.name}
                                         </h1>
                                     ))}
@@ -140,7 +140,7 @@ export default function App() {
                             </div>
                         </div>
                     </div >
-                </VoiceProvider>
+                </VoiceProvider >
                 : null
             }
         </>
