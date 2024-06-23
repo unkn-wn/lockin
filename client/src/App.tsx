@@ -29,10 +29,6 @@ export default function App() {
     //     }
     // }, [messages]);
 
-    // Some function to fetch messages
-    const fetchMessages = async (temp: string) => {
-    }
-
     // Fetch lessons function
     const fetchLessons = async (file: File | null) => {
         setLoading(true);
@@ -60,13 +56,6 @@ export default function App() {
             setLoading(false);
         }
     }
-
-    // Switching lessons on click
-    const switchLesson = (index: number) => {
-        console.log("Switching to lesson", index + 1);
-        fetchMessages("Lesson " + (index + 1) + " messages.");
-    }
-
 
     // -------------------- Upload file functions ------------------------------
     const uploadFile = () => {

@@ -1,4 +1,4 @@
-import { useMicrophone, useVoice } from '@humeai/voice-react';
+import { useVoice } from '@humeai/voice-react';
 import { useEffect } from 'react';
 import ChatMessage from './ChatMessage';
 
