@@ -1,9 +1,11 @@
+import React, { useRef } from 'react';
 import { useVoice } from '@humeai/voice-react';
 import { useEffect } from 'react';
 import ChatMessage from './ChatMessage';
 
 
 export default function Chat() {
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     const { connect, disconnect, messages, status } = useVoice();
 
@@ -17,6 +19,13 @@ export default function Chat() {
             disconnect()
         }
     }, [])
+
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
     return (
         <>
@@ -34,6 +43,7 @@ export default function Chat() {
                         }
                         return null
                     })}
+                    <div ref={messagesEndRef} />
                 </div>
                 :
                 null

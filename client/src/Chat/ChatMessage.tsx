@@ -12,9 +12,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, sender }) => {
                 (
                     <>
                         <div className='flex justify-end '>
-                            <div className='flex flex-col'>
+                            <div className='flex flex-col w-10/12 bg-gray-100 rounded-xl p-2'>
                                 {/* <p className='font-light text-sm text-right'>{timestamp}</p> */}
-                                <p className=''>{message}</p>
+                                <p className='text-right'>{message}</p>
                             </div>
                         </div>
                     </>

@@ -209,10 +209,10 @@ export default function FaceWidgets() {
 
     return (
         <div>
-            <div className="md:flex">
+            <div className="h-full">
                 <FaceTrackedVideo
                     onVideoReady={onVideoReady}
-                    width={300}
+                    width={400}
                     height={300}
                 />
 
