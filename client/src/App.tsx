@@ -94,7 +94,9 @@ export default function App() {
         };
 
         const inputElement = inputFile.current;
-        inputElement?.addEventListener('change', handleFileChange);
+        setTimeout(() => {
+            inputElement?.addEventListener('change', handleFileChange);
+        }, 500)
 
         return () => {
             inputElement?.removeEventListener('change', handleFileChange);
