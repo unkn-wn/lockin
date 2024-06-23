@@ -18,13 +18,13 @@ import {
 
 export default function App() {
     const inputFile = useRef<HTMLInputElement | null>(null);
-    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    // const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     const [lessons, setLessons] = useState<{ name: string; description: string; topics: string[] }[]>([]);
     const [token, setToken] = useState<string | null>(null)
 
     const [loading, setLoading] = useState(false);
-    const [speaking, setSpeaking] = useState(false);
+    // const [speaking, setSpeaking] = useState(false);
 
     const [whiteboardOn, setWhiteboardOn] = useState(false);
     const [textboxOn, setTextboxOn] = useState(false);
@@ -32,7 +32,7 @@ export default function App() {
 
     useEffect(() => {
         getToken(setToken)
-        setSpeaking(true);
+        // setSpeaking(true);
     }, [])
 
     // useEffect to scroll to bottom of chat
@@ -47,7 +47,7 @@ export default function App() {
         setLoading(true);
         try {
             const formData = new FormData();
-            let response:Response;
+            let response: Response;
             if (lessondata instanceof File) {
                 formData.append('file', lessondata);
                 response = await fetch("http://localhost:8000/curriculum/generate/file", {
@@ -154,10 +154,14 @@ export default function App() {
                                 </div>
 
 
-                                {/* Textbox */}
+                                {/* Topic Textbox */}
                                 {textboxOn ? <div className="flex flex-col gap-2 mb-4">
                                     <input type="text" className="w-full p-2 border-2 border-black rounded-lg" placeholder="Enter topic here..." onChange={(e) => { setTopicTextbox(e.target.value); }} />
-                                    <button className="w-full bg-black text-white p-2 rounded-lg" onClick={(e) => { submitTopicTextbox(e); }}>Submit</button>
+
+                                    <div className="flex flex-row gap-2">
+                                        <button className="w-1/4 border-2 border-black text-black p-2 rounded-lg" onClick={() => { setTextboxOn(!textboxOn); }}>Cancel</button>
+                                        <button className="w-3/4 bg-black text-white p-2 rounded-lg" onClick={(e) => { submitTopicTextbox(e); }}>Submit</button>
+                                    </div>
                                 </div> : null}
 
 
@@ -179,7 +183,7 @@ export default function App() {
                                                     <MenuButton isActive={isOpen} as={Button} rightIcon={<FaAngleDown />}>
                                                         <h2 className="text-lg text-center">generate.</h2>
                                                     </MenuButton>
-                                                    <MenuList>
+                                                    <MenuList className="bg-white mb-2">
                                                         <MenuItem onClick={() => { uploadFile() }}>
                                                             <input type='file' ref={inputFile} style={{ display: 'none' }} accept=".pdf" />
                                                             <div className="flex flex-row gap-2 p-2 justify-center items-center hover:bg-gray-200 transition rounded-lg">
@@ -188,7 +192,7 @@ export default function App() {
                                                             </div>
                                                         </MenuItem>
                                                         <MenuItem onClick={() => { setTextboxOn(!textboxOn) }}>
-                                                            <div className="flex flex-row gap-2 mb-4 p-2 justify-center items-center hover:bg-gray-200 transition rounded-lg">
+                                                            <div className="flex flex-row gap-2 p-2 justify-center items-center hover:bg-gray-200 transition rounded-lg">
                                                                 <FaPen size={24} />
                                                                 <h2 className='text-md text-center'>topic.</h2>
                                                             </div>
