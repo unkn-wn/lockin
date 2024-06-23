@@ -193,7 +193,7 @@ export default function App() {
                                                     <MenuButton isActive={isOpen} as={Button} rightIcon={<FaAngleDown />}>
                                                         <h2 className="text-lg text-center">generate.</h2>
                                                     </MenuButton>
-                                                    <MenuList>
+                                                    <MenuList className="bg-white rounded-lg mb-2">
                                                         <MenuItem onClick={() => { inputFile.current?.click() }}>
                                                             <input type='file' ref={inputFile} onChange={(event) => uploadFile(event)} style={{ display: 'none' }} accept=".pdf" />
                                                             <div className="flex flex-row gap-2 p-2 justify-center items-center hover:bg-gray-200 transition rounded-lg">
