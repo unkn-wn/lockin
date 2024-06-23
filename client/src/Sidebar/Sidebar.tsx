@@ -5,7 +5,8 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
-    Button
+    Button,
+    Tooltip
 } from '@chakra-ui/react'
 import { useVoice } from '@humeai/voice-react';
 
@@ -15,10 +16,11 @@ import FaceWidgets from '../Facecam/FaceWidgets';
 
 type Props = {
     loading: boolean,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setSelectedLesson: React.Dispatch<React.SetStateAction<string | null>>
 }
 
-export default function Sidebar({ loading, setLoading }: Props) {
+export default function Sidebar({ loading, setLoading, setSelectedLesson }: Props) {
 
     const { sendUserInput, sendSessionSettings, clearMessages } = useVoice()
 
@@ -87,21 +89,24 @@ export default function Sidebar({ loading, setLoading }: Props) {
                 <h1 className="text-5xl font-bold">lock in.</h1>
                 <div className="flex flex-col gap-8 py-6 overflow-y-auto h-full">
                     {lessons.map((lesson, index) => (
-                        <h1 className='text-2xl font-bold cursor-pointer hover:text-gray-500 transition'
-                            key={index}
-                            onClick={() => {
-                                clearMessages()
-                                sendSessionSettings({
-                                    context: {
-                                        text: `The lesson is: ${lesson.name}. The lesson description is: ${lesson.description}. The lesson topics to follow are: ${lesson.topics.join(', ')})}`,
-                                        type: 'persistent'
-                                    }
-                                })
-                                sendUserInput(' ')
-                            }}
-                        >
-                            {index + 1}: {lesson.name}
-                        </h1>
+                        <Tooltip className="bg-white border-2 border-black px-4 py-1 rounded" hasArrow label={lesson.description} placement='right-start'>
+                            <h1 className='text-2xl font-bold cursor-pointer hover:text-gray-500 transition'
+                                key={index}
+                                onClick={() => {
+                                    clearMessages()
+                                    setSelectedLesson(lesson.name)
+                                    sendSessionSettings({
+                                        context: {
+                                            text: `The lesson is: ${lesson.name}. The lesson description is: ${lesson.description}. The lesson topics to follow are: ${lesson.topics.join(', ')}. Please focus on teaching in very high depth for these topics. DO NOT cover any other topics, even if requested to do so!`,
+                                            type: 'persistent'
+                                        }
+                                    })
+                                    sendUserInput(' ')
+                                }}
+                            >
+                                {index + 1}: {lesson.name}
+                            </h1>
+                        </Tooltip>
                     ))}
                 </div>
 
@@ -164,7 +169,7 @@ export default function Sidebar({ loading, setLoading }: Props) {
             </div >
 
             {/* WHITEBOARD */}
-            {whiteboardOn ? <Whiteboard /> : null}
+            {whiteboardOn ? <Whiteboard setLoading={setLoading} /> : null}
         </>
     )
 }

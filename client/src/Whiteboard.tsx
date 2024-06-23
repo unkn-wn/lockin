@@ -2,7 +2,11 @@ import React, { useRef } from 'react';
 import { ReactSketchCanvas } from 'react-sketch-canvas';
 import { useVoice } from '@humeai/voice-react';
 
-const Whiteboard: React.FC = () => {
+type Props = {
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const Whiteboard = ({ setLoading }: Props) => {
 
     const canvas = useRef();
 
@@ -38,18 +42,20 @@ const Whiteboard: React.FC = () => {
             body: JSON.stringify({'image': imageBase64})
         };
 
+        setLoading(true);
         fetch("http://localhost:8000/curriculum/image-to-text", requestOptions)
-          .then((response) => response.json())
-          .then((result) => (
-                console.log(result),
-                sendSessionSettings({
-                    context: {
-                        text: `The User provided a reference image for the next message: ${result.description}`,
-                        type: 'temporary'
-                    }
+            .then((response) => response.json())
+            .then((result) => {
+                    console.log(result);
+                    sendSessionSettings({
+                        context: {
+                            text: `The User provided a reference image for the next message: ${result.description}`,
+                            type: 'editable'
+                        }
+                    });
+                    setLoading(false);
                 })
-          ))
-          .catch((error) => console.error(error));
+            .catch((error) => console.error(error));
     };
 
     return (

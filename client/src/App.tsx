@@ -12,7 +12,7 @@ export default function App() {
     // const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     const [token, setToken] = useState<string | null>(null)
-
+    const [selectedLesson, setSelectedLesson] = useState<string | null>(null)
     const [loading, setLoading] = useState(false);
     // const [speaking, setSpeaking] = useState(false);
 
@@ -47,9 +47,9 @@ export default function App() {
                             />
                         </div> : null}
                         <div className="flex flex-row h-full">
-                            <Sidebar loading={loading} setLoading={setLoading} />
+                            <Sidebar loading={loading} setLoading={setLoading} setSelectedLesson={setSelectedLesson}/>
                             <div className="flex flex-col w-4/5 border-l-2 p-4 border-black">
-                                <Chat />
+                                {selectedLesson ? <Chat /> : <h1>Upload a file or topic to generate your curriculum!</h1>}
                             </div>
                         </div>
                     </div >
