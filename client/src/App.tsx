@@ -207,7 +207,7 @@ export default function App() {
 
                                 {/* WEBCAM */}
                                 <div className="mt-2" >
-                                    {/* <FaceWidgets /> */}
+                                    <FaceWidgets />
                                 </div>
                             </div>
 
