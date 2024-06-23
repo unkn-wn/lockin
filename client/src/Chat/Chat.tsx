@@ -1,26 +1,43 @@
-import ChatMessage from './ChatMessage'
+import { useMicrophone, useVoice } from '@humeai/voice-react';
+import { useEffect } from 'react';
+import ChatMessage from './ChatMessage';
 
-type Props = {
-    messages: { text: string; sender: string; timestamp: string; }[],
-    messagesEndRef: React.RefObject<HTMLDivElement>
-}
 
-export default function Chat({ messages, messagesEndRef }: Props) {
+export default function Chat() {
+
+    const { connect, disconnect, messages, status } = useVoice();
+
+    useEffect(() => {
+        console.log(messages)
+    }, [messages])
+
+    useEffect(() => {
+        connect()
+        return () => {
+            disconnect()
+        }
+    }, [])
+
     return (
         <>
-            <div className="overflow-y-auto h-full pr-6">
-                {messages.map((message, index) => (
-                    <ChatMessage
-                        key={index}
-                        message={message.text}
-                        sender={message.sender}
-                        timestamp={message.timestamp}
-                    />
-                ))}
-
-                <div ref={messagesEndRef} />
-            </div>
+            {status.value == 'connected' ?
+                <div className="overflow-y-auto h-full pr-6">
+                    {messages.map((message, index) => {
+                        if (message.type == 'user_message' || message.type == 'assistant_message') {
+                            return (
+                                <ChatMessage
+                                    key={index}
+                                    message={message.message.content}
+                                    sender={message.message.role}
+                                />
+                            )
+                        }
+                        return null
+                    })}
+                </div>
+                :
+                null
+            }
         </>
     )
-
 }

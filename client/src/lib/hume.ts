@@ -1,6 +1,6 @@
 import { fetchAccessToken } from '@humeai/voice';
 
-async function connect(setToken: React.Dispatch<React.SetStateAction<string | null>>) {
+async function getToken(setToken: React.Dispatch<React.SetStateAction<string | null>>) {
     const apiKey = import.meta.env.VITE_HUME_API_KEY || '';
     const secretKey = import.meta.env.VITE_HUME_API_SECRET || '';
 
@@ -8,4 +8,4 @@ async function connect(setToken: React.Dispatch<React.SetStateAction<string | nu
     setToken(token)
 }
 
-export { connect }
+export { getToken }
