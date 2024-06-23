@@ -12,19 +12,7 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
-    MenuItemOption,
-    MenuGroup,
-    MenuOptionGroup,
-    MenuDivider,
-    Button,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    useDisclosure,
+    Button
 } from '@chakra-ui/react'
 
 
@@ -37,9 +25,10 @@ export default function App() {
 
     const [loading, setLoading] = useState(false);
     const [speaking, setSpeaking] = useState(false);
-    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const [whiteboardOn, setWhiteboardOn] = useState(false);
+    const [textboxOn, setTextboxOn] = useState(false);
+    const [topicTextbox, setTopicTextbox] = useState('');
 
     useEffect(() => {
         getToken(setToken)
@@ -54,12 +43,14 @@ export default function App() {
     // }, [messages]);
 
     // Fetch lessons function
-    const fetchLessons = async (file: File | null) => {
+    const fetchLessons = async (lessondata: any | null) => {
         setLoading(true);
         try {
             const formData = new FormData();
-            if (file) {
-                formData.append('file', file);
+            if (lessondata instanceof File) {
+                formData.append('file', lessondata);
+            } else if (typeof lessondata === 'string') {
+                formData.append('topic', lessondata);
             }
 
             const response = await fetch("http://localhost:8000/curriculum/generate", {
@@ -111,30 +102,24 @@ export default function App() {
     }, []);
     // -------------------------------------------------------------------------
 
+
+    // SUBMIT TOPIC TEXTBOX
+    const submitTopicTextbox = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        console.log("topic: " + topicTextbox);
+        setTextboxOn(false);
+        fetchLessons(topicTextbox);
+    }
+
+
     return (
         <>
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>Modal Title</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        hihihhsadskl
-                    </ModalBody>
-
-                    <ModalFooter>
-                        <Button colorScheme='blue' mr={3} onClick={onClose}>
-                            Close
-                        </Button>
-                        <Button variant='ghost'>Secondary Action</Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
 
 
             {token ?
                 <VoiceProvider auth={{ type: 'accessToken', value: token ?? '' }} configId='b38e9463-48e8-4fd0-968a-f8970f40f134'>
                     <div className='h-screen w-screen bg-white'>
+
                         {/* LOADING ICON */}
                         {loading ? <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm z-50">
                             <ClipLoader
@@ -165,6 +150,14 @@ export default function App() {
                                 </div>
 
 
+                                {/* Textbox */}
+                                {textboxOn ? <div className="flex flex-col gap-2 mb-4">
+                                    <input type="text" className="w-full p-2 border-2 border-black rounded-lg" placeholder="Enter topic here..." onChange={(e) => { setTopicTextbox(e.target.value); }} />
+                                    <button className="w-full bg-black text-white p-2 rounded-lg" onClick={(e) => { submitTopicTextbox(e); }}>Submit</button>
+                                </div> : null}
+
+
+
                                 <div className="flex flex-row gap-2">
                                     {/* DRAW BUTTON */}
                                     <div className="w-1/2 flex flex-row gap-2 justify-center items-center py-2 rounded-lg border-2 border-black cursor-pointer hover:bg-gray-200 transition"
@@ -173,8 +166,8 @@ export default function App() {
                                         <h2 className='text-lg text-center'>draw.</h2>
                                     </div>
 
-                                    {/* GENERATE BUTTON */}
 
+                                    {/* GENERATE BUTTON */}
                                     <div className="w-1/2 flex flex-row gap-2 justify-center items-center py-2 rounded-lg border-2 border-black cursor-pointer hover:bg-gray-200 transition">
                                         <Menu>
                                             {({ isOpen }) => (
@@ -184,13 +177,13 @@ export default function App() {
                                                     </MenuButton>
                                                     <MenuList>
                                                         <MenuItem onClick={() => { uploadFile() }}>
+                                                            <input type='file' ref={inputFile} style={{ display: 'none' }} accept=".pdf" />
                                                             <div className="flex flex-row gap-2 p-2 justify-center items-center hover:bg-gray-200 transition rounded-lg">
-                                                                <input type='file' ref={inputFile} style={{ display: 'none' }} accept=".pdf" />
                                                                 <FaUpload size={24} />
                                                                 <h2 className='text-md text-center'>upload.</h2>
                                                             </div>
                                                         </MenuItem>
-                                                        <MenuItem onClick={onOpen}>
+                                                        <MenuItem onClick={() => { setTextboxOn(!textboxOn) }}>
                                                             <div className="flex flex-row gap-2 mb-4 p-2 justify-center items-center hover:bg-gray-200 transition rounded-lg">
                                                                 <FaPen size={24} />
                                                                 <h2 className='text-md text-center'>topic.</h2>
@@ -207,18 +200,18 @@ export default function App() {
 
                                 {/* WEBCAM */}
                                 <div className="mt-2" >
-                                    <FaceWidgets />
+                                    {/* <FaceWidgets /> */}
                                 </div>
                             </div>
 
                             {/* MAIN PAGE */}
-                            <div className="flex flex-col w-4/5 border-l p-4 border-black">
+                            <div className="flex flex-col w-4/5 border-l-2 p-4 border-black">
                                 {/* WHITEBOARD */}
 
                                 {whiteboardOn ? <Whiteboard /> : null}
 
                                 {/* CHAT */}
-                                <Chat />
+                                {/* <Chat /> */}
                             </div>
                         </div>
                     </div >
